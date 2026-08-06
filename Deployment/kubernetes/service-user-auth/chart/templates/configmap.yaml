@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.configMap.name }}
+data:
+  SERVER_DISCOVERY: {{ .Values.configMap.data.SERVER_DISCOVERY | quote }}
+
+  # Replace these placeholders with the values currently used in your .env file.
+  SECURITY_ENABLED: {{ .Values.configMap.data.SECURITY_ENABLED | quote }}
+  CACHE_ENABLED: {{ .Values.configMap.data.CACHE_ENABLED | quote }}
+  CACHE_PROVIDER: {{ .Values.configMap.data.CACHE_PROVIDER | quote }}
+  MESSAGING_PROVIDER: {{ .Values.configMap.data.MESSAGING_PROVIDER | quote }}
+
+  REDIS_HOST: {{ .Values.configMap.data.REDIS_HOST | quote }}
+  MEMCACHED_HOST: {{ .Values.configMap.data.MEMCACHED_HOST | quote }}
+
+  # Kept temporarily as in Docker Compose.
+  # We will review Kafka networking and advertised listeners separately.
+  KAFKA_HOST: {{ .Values.configMap.data.KAFKA_HOST | quote }}
+
+  ENDPOINT_OVERRIDE: {{ .Values.configMap.data.ENDPOINT_OVERRIDE | quote }}
+  ID_GENERATOR: {{ .Values.configMap.data.ID_GENERATOR | quote }}
+
+  EUREKA_INSTANCE_HOSTNAME: {{ .Values.configMap.data.EUREKA_INSTANCE_HOSTNAME | quote }}
+  EUREKA_INSTANCE_PREFER_IP_ADDRESS: {{ .Values.configMap.data.EUREKA_INSTANCE_PREFER_IP_ADDRESS | quote }}
+
+  SECURITY_PUBLIC_URL: {{ .Values.configMap.data.SECURITY_PUBLIC_URL | quote }}
+
+  LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY_WEB_FILTERCHAINPROXY: {{ .Values.configMap.data.LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY_WEB_FILTERCHAINPROXY | quote }}
+  LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: {{ .Values.configMap.data.LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY | quote }}
+  LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY_WEB: {{ .Values.configMap.data.LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY_WEB | quote }}

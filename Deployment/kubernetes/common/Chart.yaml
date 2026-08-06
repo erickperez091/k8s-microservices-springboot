@@ -1,0 +1,23 @@
+apiVersion: v2
+name: microservices-springboot-umbrella
+description: Umbrella chart que agrupa los 4 microservicios
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+dependencies:
+  - name: service-gateway
+    version: "0.1.0"
+    repository: "file://../service-gateway/chart"
+
+  - name: service-discovery
+    version: "0.1.0"
+    repository: "file://../service-discovery/chart"
+
+  - name: service-products
+    version: "0.1.0"
+    repository: "file://../service-products/chart"
+
+  - name: service-user-auth
+    version: "0.1.0"
+    repository: "file://../service-user-auth/chart"

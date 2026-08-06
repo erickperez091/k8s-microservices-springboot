@@ -1,0 +1,69 @@
+application:
+  name: service-gateway
+
+service:
+  type: LoadBalancer
+  port: 9090
+  targetPort: 9090
+
+replicaCount: 1
+
+image:
+  repository: erickperez091/dev-server-gateway
+  tag: 1.0.1
+  pullPolicy: Always # Possible values: Always, IfNotPresent, Never
+
+resources:
+  requests:
+    cpu: "250m"
+    memory: "256Mi"
+
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+
+configMap:
+  name: config-gateway
+  data:
+    SERVER_DISCOVERY: "http://service-discovery:8761/eureka"
+
+    # Replace these placeholders with the values currently used in your .env file.
+    SECURITY_ENABLED: "true"
+    CACHE_ENABLED: "true"
+    CACHE_PROVIDER: "redis"
+    EUREKA_INSTANCE_HOSTNAME: "service-gateway"
+    EUREKA_INSTANCE_PREFER_IP_ADDRESS: "false"
+
+    LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY_WEB_FILTERCHAINPROXY: "INFO"
+
+secret:
+  name: secret-gateway
+
+externalSecret:
+  name: external-secret-gateway
+  refreshInterval: 1m
+  secretStoreName: store-gateway
+  targetSecretName: secret-gateway
+
+  remoteSecrets:
+    authentication:
+      key: services/gateway/authentication
+      properties:
+        jwtSecret: jwtSecret
+
+secretStore:
+  name: store-gateway
+  aws:
+    service: SecretsManager
+    region: us-east-1
+    role: arn:aws:iam::000000000000:role/role-gateway-secret-reader
+
+livenessProbe:
+  path: /liveness
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+readinessProbe:
+  path: /readiness
+  initialDelaySeconds: 30
+  periodSeconds: 10

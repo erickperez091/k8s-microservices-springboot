@@ -1,0 +1,97 @@
+application:
+  name: service-user-auth
+
+service:
+  type: ClusterIP
+  port: 9082
+  targetPort: 9082
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 70
+
+replicaCount: 1
+
+image:
+  repository: erickperez091/dev-user-service
+  tag: 1.0.1
+  pullPolicy: Always # Possible values: Always, IfNotPresent, Never
+
+resources:
+  requests:
+    cpu: "250m"
+    memory: "256Mi"
+
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+
+configMap:
+  name: config-user-auth
+  data:
+    SERVER_DISCOVERY: "http://service-discovery:8761/eureka"
+
+    # Replace these placeholders with the values currently used in your .env file.
+    SECURITY_ENABLED: "true"
+    CACHE_ENABLED: "true"
+    CACHE_PROVIDER: "redis"
+    MESSAGING_PROVIDER: "kafka"
+
+    REDIS_HOST: "host.docker.internal"
+    MEMCACHED_HOST: "host.docker.internal"
+
+    # Kept temporarily as in Docker Compose.
+    # We will review Kafka networking and advertised listeners separately.
+    KAFKA_HOST: "host.docker.internal:39092"
+
+    ENDPOINT_OVERRIDE: "http://host.docker.internal:4566"
+    ID_GENERATOR: "ulid_id"
+
+    EUREKA_INSTANCE_HOSTNAME: "service-user-auth"
+    EUREKA_INSTANCE_PREFER_IP_ADDRESS: "false"
+    SECURITY_PUBLIC_URL: "/auth/**,/actuator/health/**"
+
+    LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY_WEB_FILTERCHAINPROXY: "INFO"
+    LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: "INFO"
+    LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY_WEB: "INFO"
+
+secret:
+  name: secret-user-auth
+
+externalSecret:
+  name: external-secret-user-auth
+  refreshInterval: 1m
+  secretStoreName: store-user-auth
+  targetSecretName: secret-user-auth
+
+  remoteSecrets:
+    database:
+      key: services/user-auth/database
+      properties:
+        url: url
+        username: username
+        password: password
+    
+    authentication:
+      key: services/user-auth/authentication
+      properties:
+        jwtSecret: jwtSecret
+
+secretStore:
+  name: store-user-auth
+  aws:
+    service: SecretsManager
+    region: us-east-1
+    role: arn:aws:iam::000000000000:role/role-user-auth-secret-reader
+
+livenessProbe:
+  path: /liveness
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+readinessProbe:
+  path: /readiness
+  initialDelaySeconds: 30
+  periodSeconds: 10

@@ -1,0 +1,20 @@
+apiVersion: external-secrets.io/v1
+kind: SecretStore
+metadata:
+  name: {{ .Values.secretStore.name }}
+spec:
+  provider:
+    aws:
+      service: {{ .Values.secretStore.aws.service }}
+      region: {{ .Values.secretStore.aws.region | quote }}
+      role: {{ .Values.secretStore.aws.role | quote }}
+
+      auth:
+        secretRef:
+          accessKeyIDSecretRef:
+            name: secret-aws-localstack
+            key: access-key
+
+          secretAccessKeySecretRef:
+            name: secret-aws-localstack
+            key: secret-access-key

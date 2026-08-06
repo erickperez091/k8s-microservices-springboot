@@ -1,0 +1,60 @@
+## create secret in localstack (aws)
+## user service secrets
+aws --profile=localstack secretsmanager create-secret --name=services/products/database --secret-string='{"username":"[USER]","password":"[PASSWORD]", "url":"JDBC_URL"}' --region=us-east-1 --endpoint-url=http://localhost:4566
+aws --profile=localstack secretsmanager create-secret --name=services/products/authentication --secret-string='{"jwtSecret":"JWT_SECRET"}' --region=us-east-1 --endpoint-url=http://localhost:4566
+
+## product service secrets
+aws --profile=localstack secretsmanager create-secret --name=services/user-auth/database --secret-string='{"username":"[USER]","password":"[PASSWORD]", "url":"JDBC_URL"}' --region=us-east-1 --endpoint-url=http://localhost:4566
+aws --profile=localstack secretsmanager create-secret --name=services/user-auth/authentication --secret-string='{"jwtSecret":"JWT_SECRET"}' --region=us-east-1 --endpoint-url=http://localhost:4566
+
+## update secretsmanage
+aws --profile=localstack secretsmanager put-secret-value --secret-id=services/products/database --secret-string='{"username":"[NEW_USER]","password":"[NEWP_PASSWORD]", "url":"[NEW_URL]"}' --region=us-east-1 --endpoint-url=http://localhost:4566
+
+## retrieve secret in localstack (aws)
+aws --profile=localstack secretsmanager get-secret-value --secret-id=service/products/database --region=us-east-1 --endpoint-url=http://localhost:4566
+
+## create roles in localstack (aws)
+aws --profile=localstack iam create-role --role-name=role-products-secret-reader --assume-role-policy-document=file://trust-policy.json --endpoint-url=http://localhost:4566
+aws --profile=localstack iam create-role --role-name=role-user-auth-secret-reader --assume-role-policy-document=file://trust-policy.json --endpoint-url=http://localhost:4566
+aws --profile=localstack iam create-role --role-name=role-products-secret-denied --assume-role-policy-document=file://trust-policy.json --endpoint-url=http://localhost:4566
+
+## retrieve role in localstack (aws)
+aws --profile=localstack iam get-role --role-name=role-products-secret-reader --region=us-east-1 --endpoint-url=http://localhost:4566
+aws --profile=localstack iam get-role --role-name=role-user-auth-secret-reader --region=us-east-1 --endpoint-url=http://localhost:4566
+
+## create policy in localstack (aws)
+aws --profile=localstack iam create-policy --policy-name=policy-products-secret-read --policy-document=file://policy-products-secret-read.json --endpoint-url=http://localhost:4566
+aws --profile=localstack iam create-policy --policy-name=policy-user-auth-secret-read --policy-document=file://policy-user-auth-secret-read.json --endpoint-url=http://localhost:4566
+
+## delete policy in localstack (aws)
+aws --profile=localstack iam delete-policy --policy-arn=arn:aws:iam::000000000000:policy/policy-products-secret-read --endpoint-url=http://localhost:4566
+aws --profile=localstack iam delete-policy --policy-arn=arn:aws:iam::000000000000:policy/policy-user-auth-secret-read --endpoint-url=http://localhost:4566
+
+## attach policy to a role in localstack (aws)
+aws --profile=localstack iam attach-role-policy --role-name=role-products-secret-reader --policy-arn=arn:aws:iam::000000000000:policy/policy-products-secret-read --endpoint-url=http://localhost:4566
+aws --profile=localstack iam attach-role-policy --role-name=role-user-auth-secret-reader --policy-arn=arn:aws:iam::000000000000:policy/policy-user-auth-secret-read --endpoint-url=http://localhost:4566
+
+## detach policy from a role in localstack (aws) - delete rol
+aws --profile=localstack iam detach-role-policy --role-name=role-products-secret-reader --policy-arn=arn:aws:iam::000000000000:policy/policy-products-secret-read --endpoint-url=http://localhost:4566
+aws --profile=localstack iam delete-role --role-name=role-products-secret-reader --endpoint-url=http://localhost:4566
+
+## list attached role-policies in localstack (aws)
+aws --profile=localstack iam list-attached-role-policies --role-name=role-products-secret-reader --endpoint-url=http://localhost:4566
+aws --profile=localstack iam list-attached-role-policies --role-name=role-user-auth-secret-reader --endpoint-url=http://localhost:4566
+aws --profile=localstack iam list-attached-role-policies --role-name=role-products-secret-denied --endpoint-url=http://localhost:4566
+
+## assume role sts in localstack (aws)
+aws --profile=localstack sts assume-role --role-arn=arn:aws:iam::000000000000:role/role-products-secret-reader --role-session-name=reader-session --endpoint-url=http://localhost:4566
+aws --profile=localstack sts assume-role --role-arn=arn:aws:iam::000000000000:role/role-user-auth-secret-reader --role-session-name=reader-session --endpoint-url=http://localhost:4566
+aws --profile=localstack sts assume-role --role-arn=arn:aws:iam::000000000000:role/role-products-secret-denied --role-session-name=denied-session --endpoint-url=http://localhost:4566
+
+aws sts get-caller-identity --region=us-east-1 --endpoint-url=http://localhost:4566
+aws secretsmanager get-secret-value --secret-id=services/products/database --region=us-east-1 --endpoint-url=http://localhost:4566
+
+## get secrets using 
+aws --profile=localstack secretsmanager get-secret-value --secret-id=products/database --endpoint-url=http://localhost:4566
+
+
+export AWS_ACCESS_KEY_ID=LSIAQAAAAAAAIIW2XTCF
+export AWS_SECRET_ACCESS_KEY=xZVO++8H7MDDf20+ISPjJHBX0XM3/k5ePmLoJHJz
+export AWS_SESSION_TOKEN=FQoGZXIvYXdzEOhanNm14+cNUxvrOkth58Am0+ldqKC9R5D/BBvfLuxZCoJFIBYuo+Mdoy8lA8hvnlmGzLL/gVfJ+PgFLWNSK98tJPVacNav7KkTDi60K0M40tqMIRH3AUTz9phwKODDTxxI5bDR+=/abhhM3XkY2Iu5=0gvjX1HK3fkzoQ/64ZvBeRew/TRtaaCbgILzG7uJ5uiFBsUyzl9ibXTnNCjBS6uY9sarkKe21axj7Dsa+2mk3Iydifj6PM7qZDgqBiGSFVoJcjYlDVszFnORS+mzka=9eGXcr/44IOb7GlGwgq/wbg2muulX7uoeNR0v0KMm=zUIJRUr==jIdMfCu+Iyj8c

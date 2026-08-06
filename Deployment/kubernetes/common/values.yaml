@@ -1,0 +1,51 @@
+service-gateway:
+  replicaCount: 1
+  image:
+    tag: "1.0.2"
+  livenessProbe:
+    path: /actuator/health/liveness
+  readinessProbe:
+    path: /actuator/health/readiness
+  configMap:
+    data:
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY_WEB_FILTERCHAINPROXY: "INFO"
+
+service-discovery:
+  replicaCount: 1
+  image:
+    tag: "1.0.2"
+  livenessProbe:
+    path: /actuator/health/liveness
+  readinessProbe:
+    path: /actuator/health/readiness
+  configMap:
+    data:
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY_WEB_FILTERCHAINPROXY: "INFO"
+
+service-products:
+  replicaCount: 1
+  image:
+    tag: "1.0.2"
+  livenessProbe:
+    path: /actuator/health/liveness
+  readinessProbe:
+    path: /actuator/health/readiness
+  configMap:
+    data:
+      SECURITY_PUBLIC_URL: "/actuator/health/**"
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY_WEB_FILTERCHAINPROXY: "INFO"
+
+service-user-auth:
+  replicaCount: 1
+  image:
+    tag: "1.0.2"
+  livenessProbe:
+    path: /actuator/health/liveness
+  readinessProbe:
+    path: /actuator/health/readiness
+  configMap:
+    data:
+      SECURITY_PUBLIC_URL: /auth/**,/actuator/health/**
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY_WEB_FILTERCHAINPROXY: "INFO"
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: "INFO"
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY_WEB: "INFO"

@@ -10,7 +10,7 @@ replicaCount: 1
 
 image:
   repository: erickperez091/dev-server-discovery
-  tag: 1.0.1
+  tag: 1.0.2
   pullPolicy: Always # Possible values: Always, IfNotPresent, Never
 
 configMap:
@@ -28,11 +28,11 @@ resources:
     memory: "512Mi"
 
 livenessProbe:
-  path: /liveness
+  path: /actuator/health/liveness
   initialDelaySeconds: 30
   periodSeconds: 10
 
 readinessProbe:
-  path: /readiness
+  path: /actuator/health/readiness
   initialDelaySeconds: 30
   periodSeconds: 10
